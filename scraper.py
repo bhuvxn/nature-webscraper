@@ -42,37 +42,51 @@ def get_link_write_news(link):
         f.write(body.encode())
     return (f'{title}.txt')
 
-#parsing using input for number of pages and article type
-pages = input()
-atype = input()
 
-#going through each page and writing values of given type
-for page_number in range(int(pages)):
-    #appending page number to our base url
-    current_page_url = f'{url}{str(page_number+1)}'
-    #opening the current page we are on 
-    soup = BeautifulSoup(write_html(current_page_url),'html.parser')
-    #isolating data-test = "article.type"
+
+
+def isolate_article_soup(cur_url):
+    soup = BeautifulSoup(write_html(cur_url), 'html.parser')
     cleaned_soup = str(soup.find_all('article'))
     cleaned_soup = BeautifulSoup(cleaned_soup, 'html.parser')
-    #removing all articles that are not of the given input type
-    for article in cleaned_soup.find_all(attrs={'data-test':'article.type'}):
-        if((article.getText()) != atype):
-            #finding parent article and removing it from tree
-            absolute_parent = article.find_parent('article')
-            absolute_parent.decompose()
-    #making directory corresponding to our current page number then changing to int
-    new_dir = (f'Page_{str(page_number+1)}')
-    os.mkdir(f'{base_dir}/{new_dir}')
-    #changing to new directory
-    os.chdir(f'{base_dir}/{new_dir}')
-    #passing each link in the given page to get_link_write_news, and store it in a page_n directory
-    for link in cleaned_soup.find_all('a'):
-        get_link_write_news(link.get('href'))
-    #changing back to base_dir once current page number is completed
-    os.chdir(f'{base_dir}')
+    return cleaned_soup
+
+def remove_irrelevant_types(isolated_soup, atype):
+    for article in isolated_soup.find_all(attrs={'data-test':'article.type'}):
+        if((article.getText())!=atype):
+           absolute_parent = article.find_parent('article')
+           absolute_parent.decompose()
 
 
-print("Saved all articles")
-# old code below for reference
+def main():
+    #parsing using input for number of pages and article type
+    pages = int(input())
+    atype = input()
+
+    #going through each page and writing values of given type
+    for page_number in range(pages):
+        #appending page number to our base url
+        cur_page = page_number+1 
+        current_page_url = f'{url}{str(cur_page)}'
+        new_dir = (f'Page_{str(cur_page)}')
+        cleaned_soup = isolate_article_soup(current_page_url)
+
+        #removing all articles that are not of the given input
+        remove_irrelevant_types(cleaned_soup, atype)
+        #making directory corresponding to our current page number then changing to input
+        os.mkdir(f'{base_dir}/{new_dir}')
+        #changing to new directory
+        os.chdir(f'{base_dir}/{new_dir}')
+        #passing each link in the given page to get_link_write_news, and store it in a page_n directory
+        for link in cleaned_soup.find_all('a'):
+            get_link_write_news(link.get('href'))
+        #changing back to base_dir once current page number is completed
+        os.chdir(f'{base_dir}')
+
+    print("Saved all articles")
+
+
+if __name__ == "__main__":
+    main()
+ 
 
