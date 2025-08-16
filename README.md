@@ -96,26 +96,6 @@ To modify the year or other parameters, edit the `url` variable in `scraper.py`:
 url = "https://www.nature.com/nature/articles?sort=PubDate&year=2020&page="
 ```
 
-## Error Handling
-
-- Validates HTTP responses before processing
-- Handles missing HTML elements gracefully
-- Creates directories safely
-
-## Limitations
-
-- Currently hardcoded to 2020 articles
-- Requires manual input for pages and article type
-- Limited to Nature.com's article structure
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## License
 
 This project is provided as-is for educational purposes. Please respect Nature.com's terms of service and robots.txt when using this scraper.
 
